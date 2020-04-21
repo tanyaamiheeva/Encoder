@@ -1,18 +1,22 @@
+import string
+alphabet = string.ascii_lowercase + string.ascii_uppercase
+
+
 class CaesarEncode:
     def __init__(self, key):
-        self.key = int(key) % 26
+        self.key = int(key % (len(alphabet) / 2))
 
     def get_new_symbol(self, symbol: str):
         if not symbol.isalpha():
             return symbol
         else:
             if symbol.isupper():
-                start = ord('A')
+                start = alphabet.find('A')
             else:
-                start = ord('a')
+                start = alphabet.find('a')
 
-            new_symbol_code = start + (ord(symbol) - start + self.key) % 26
-            new_symbol = chr(new_symbol_code)
+            new_symbol_code = start + (alphabet.find(symbol) - start + self.key) % (len(alphabet) / 2)
+            new_symbol = alphabet[int(new_symbol_code)]
             return new_symbol
 
     def encoder(self, message: str):
@@ -26,19 +30,20 @@ class CaesarEncode:
 
 class CaesarDecode:
     def __init__(self, key):
-        self.key = int(key) % 26
+        self.key = int(key % (len(alphabet) / 2))
 
     def get_real_symbol(self, symbol: str):
         if not symbol.isalpha():
             return symbol
         else:
             if symbol.isupper():
-                start = ord('A')
+                start = alphabet.find('A')
             else:
-                start = ord('a')
+                start = alphabet.find('a')
 
-            real_symbol_number = start + (ord(symbol) - start + 26 - self.key) % 26
-            real_symbol = chr(real_symbol_number)
+            real_symbol_number = int(start + (alphabet.find(symbol) - start +
+                                              (len(alphabet) / 2) - self.key) % (len(alphabet) / 2))
+            real_symbol = alphabet[real_symbol_number]
             return real_symbol
 
     def decoder(self, message: str):
@@ -56,12 +61,13 @@ class VigenereEncode:
 
     def get_new_symbol(self, symbol: str, pos: int):
         if symbol.isupper():
-            start = ord('A')
+            start = alphabet.find('A')
         else:
-            start = ord('a')
+            start = alphabet.find('a')
 
-        new_symbol_code = start + (ord(symbol) + ord(self.key[pos % len(self.key)]) - start - ord('a')) % 26
-        new_symbol = chr(new_symbol_code)
+        new_symbol_code = int(start + (alphabet.find(symbol) + alphabet.find(self.key[pos % len(self.key)])
+                                       - start - alphabet.find('a')) % (len(alphabet) / 2))
+        new_symbol = alphabet[new_symbol_code]
         return new_symbol
 
     def encoder(self, message: str):
@@ -84,12 +90,13 @@ class VigenereDecode:
 
     def get_real_symbol(self, symbol: str, pos: int):
         if symbol.isupper():
-            start = ord('A')
+            start = alphabet.find('A')
         else:
-            start = ord('a')
+            start = alphabet.find('a')
 
-        real_symbol_code = start + (ord(symbol) - start - ord(self.key[pos % len(self.key)]) + ord('a') + 26) % 26
-        real_symbol = chr(real_symbol_code)
+        real_symbol_code = int(start + (alphabet.find(symbol) - start - alphabet.find(self.key[pos % len(self.key)])
+                                        + alphabet.find('a') + (len(alphabet) / 2)) % (len(alphabet) / 2))
+        real_symbol = alphabet[real_symbol_code]
         return real_symbol
 
     def decoder(self, message: str):

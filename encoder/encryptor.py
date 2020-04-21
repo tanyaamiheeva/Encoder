@@ -5,30 +5,30 @@ import sys
 import json
 
 
-def encode(arguments):
+def get_message(arguments):
     if arguments.input_file:
         message = arguments.input_file.read()
     else:
         message = sys.stdin.read()
+    return message
 
+
+def encode(arguments):
+    message = get_message(arguments)
     if arguments.output_file:
         if arguments.cipher == 'caesar':
-            arguments.output_file.write(CaesarEncode(arguments.key).encoder(message))
+            arguments.output_file.write(CaesarEncode(int(arguments.key)).encoder(message))
         else:
             arguments.output_file.write(VigenereEncode(arguments.key).encoder(message))
     else:
         if arguments.cipher == 'caesar':
-            sys.stdout.write(CaesarEncode(arguments.key).encoder(message))
+            sys.stdout.write(CaesarEncode(int(arguments.key)).encoder(message))
         else:
             sys.stdout.write(VigenereEncode(arguments.key).encoder(message))
 
 
 def decode(arguments):
-    if arguments.input_file:
-        message = arguments.input_file.read()
-    else:
-        message = sys.stdin.read()
-
+    message = get_message(arguments)
     if arguments.output_file:
         if arguments.cipher == 'caesar':
             arguments.output_file.write(CaesarDecode(arguments.key).decoder(message))

@@ -1,4 +1,6 @@
 from coder import CaesarEncode, CaesarDecode
+from collections import defaultdict
+from coder import alphabet
 import string
 import json
 
@@ -6,15 +8,19 @@ import json
 class ModelBuilder:
     def __init__(self):
         self.letter_number = 0
-        self.quantities = {}
+        self.quantities = defaultdict(int)
 
     def count_quantity(self, text: str):
         for symbol in text:
             if symbol.isalpha():
-                self.letter_number += 1
-                self.quantities[symbol.lower()] = self.quantities.get(symbol.lower(), 0) + 1
+                if symbol in self.quantities:
+                    symbol = symbol.lower()
+                    self.letter_number += 1
+                    self.quantities[symbol] = self.quantities[symbol] + 1
+                else:
+                    self.quantities[symbol] = 1
 
-    def build_model(self, text: str, ):
+    def build_model(self, text: str):
         self.count_quantity(text)
         frequencies = {}
         for symbol in self.quantities.keys():
@@ -35,7 +41,7 @@ class Hack:
     def hacking(self, message: str):
         closest_key = 0
         closest_sum = 100
-        for i in range(0, 26):
+        for i in range(0, int(len(alphabet) / 2)):
             encoded = CaesarEncode(i).encoder(message)
             new_model = ModelBuilder().build_model(encoded)
             similarity_measure = 0
