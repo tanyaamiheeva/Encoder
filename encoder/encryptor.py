@@ -13,32 +13,29 @@ def get_message(arguments):
     return message
 
 
+def write(coder, arguments, message):
+    if arguments.output_file:
+        arguments.output_file.write(coder.encode(message))
+    else:
+        sys.stdout.write(coder.encode(message))
+
+
 def encode(arguments):
     message = get_message(arguments)
-    if arguments.output_file:
-        if arguments.cipher == 'caesar':
-            arguments.output_file.write(CaesarEncode(int(arguments.key)).encoder(message))
-        else:
-            arguments.output_file.write(VigenereEncode(arguments.key).encoder(message))
+    if arguments.cipher == 'caesar':
+        coder = CaesarEncode(int(arguments.key))
     else:
-        if arguments.cipher == 'caesar':
-            sys.stdout.write(CaesarEncode(int(arguments.key)).encoder(message))
-        else:
-            sys.stdout.write(VigenereEncode(arguments.key).encoder(message))
+        coder = VigenereEncode(arguments.key)
+    write(coder, arguments, message)
 
 
 def decode(arguments):
     message = get_message(arguments)
-    if arguments.output_file:
-        if arguments.cipher == 'caesar':
-            arguments.output_file.write(CaesarDecode(arguments.key).decoder(message))
-        else:
-            arguments.output_file.write(VigenereDecode(arguments.key).decoder(message))
+    if arguments.cipher == 'caesar':
+        coder = CaesarDecode(int(arguments.key))
     else:
-        if arguments.cipher == 'caesar':
-            sys.stdout.write(CaesarDecode(arguments.key).decoder(message))
-        else:
-            sys.stdout.write(VigenereDecode(arguments.key).decoder(message))
+        coder = VigenereDecode(arguments.key)
+    write(coder, arguments, message)
 
 
 def train(arguments):
@@ -69,14 +66,14 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers()
 
     parser_for_encode = subparsers.add_parser('encode')
-    parser_for_encode.set_defaults(func=encode)
+    parser_for_encode.set_defaults(mode='encode', func=encode)
     parser_for_encode.add_argument('--cipher', type=str, choices=['caesar', 'vigenere'], required=True)
     parser_for_encode.add_argument('--key', required=True)
     parser_for_encode.add_argument('--input-file', type=argparse.FileType('r'), required=False)
     parser_for_encode.add_argument('--output-file', type=argparse.FileType('w'), required=False)
 
     parser_for_decode = subparsers.add_parser('decode')
-    parser_for_decode.set_defaults(func=decode)
+    parser_for_decode.set_defaults(mode='decode', func=decode)
     parser_for_decode.add_argument('--cipher', type=str, choices=['caesar', 'vigenere'], required=True)
     parser_for_decode.add_argument('--key', required=True)
     parser_for_decode.add_argument('--input-file', type=argparse.FileType('r'), required=False)
