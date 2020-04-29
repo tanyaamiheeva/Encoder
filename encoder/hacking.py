@@ -19,7 +19,7 @@ class ModelBuilder:
         self.count_quantity(text)
         frequencies = {}
         for symbol in self.quantities.keys():
-            frequencies[symbol] = self.quantities.get(symbol, 0) / self.letter_number
+            frequencies[symbol] = self.quantities[symbol] / self.letter_number
 
         return frequencies
 
@@ -33,18 +33,19 @@ class Hack:
         self.model = model
         self.key = 0
         self.alphabet = string.ascii_letters
+        self.degree = 6
 
     def hacking(self, message: str):
-        closest_key = 0
-        closest_sum = 100
+        closest_sum = int(len(self.alphabet) // 2)
+        hacked = message
         for i in range(len(self.alphabet) // 2):
-            encoded = CaesarEncode(i).encode(message)
+            encoded = CaesarDecode(int(len(self.alphabet) // 2) - i).encode(message)
             new_model = ModelBuilder().build_model(encoded)
             similarity_measure = 0
             for symbol in string.ascii_lowercase:
-                similarity_measure += (self.model.get(symbol, 0) - new_model.get(symbol, 0))**6
+                similarity_measure += (self.model.get(symbol, 0) - new_model.get(symbol, 0))**self.degree
             if similarity_measure < closest_sum:
                 closest_sum = similarity_measure
-                closest_key = i
+                hacked = encoded
 
-        return CaesarEncode(closest_key).encode(message)
+        return hacked

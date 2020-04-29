@@ -5,11 +5,12 @@ import sys
 import json
 
 
-def get_message(arguments):
+def reading(arguments):
     if arguments.input_file:
         message = arguments.input_file.read()
     else:
         message = sys.stdin.read()
+
     return message
 
 
@@ -21,7 +22,7 @@ def write(coder, arguments, message):
 
 
 def encode(arguments):
-    message = get_message(arguments)
+    message = reading(arguments)
     if arguments.cipher == 'caesar':
         coder = CaesarEncode(int(arguments.key))
     else:
@@ -30,7 +31,7 @@ def encode(arguments):
 
 
 def decode(arguments):
-    message = get_message(arguments)
+    message = reading(arguments)
     if arguments.cipher == 'caesar':
         coder = CaesarDecode(int(arguments.key))
     else:
@@ -48,11 +49,7 @@ def train(arguments):
 
 
 def hack(arguments):
-    if arguments.input_file:
-        message = arguments.input_file.read()
-    else:
-        message = sys.stdin.read()
-
+    message = reading(arguments)
     model = json.load(arguments.model_file)
 
     if arguments.output_file:
