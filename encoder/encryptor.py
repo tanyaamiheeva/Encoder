@@ -58,7 +58,7 @@ def hack(arguments):
         sys.stdout.write(Hack(model).hacking(message))
 
 
-if __name__ == '__main__':
+def parse():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
@@ -86,6 +86,10 @@ if __name__ == '__main__':
     parser_for_hack.add_argument('--input-file', type=argparse.FileType('r'), required=False)
     parser_for_hack.add_argument('--output-file', type=argparse.FileType('w'), required=False)
     parser_for_hack.add_argument('--model-file', type=argparse.FileType('r'), required=True)
+    return parser.parse_args()
 
-    parsed_arguments = parser.parse_args()
+
+if __name__ == '__main__':
+    parsed_arguments = parse()
     parsed_arguments.func(parsed_arguments)
+
