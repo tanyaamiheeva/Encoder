@@ -1,5 +1,7 @@
 import string
 import abc
+FIRST_UPPERCASE_LETTER = string.ascii_uppercase[0]
+FIRST_LOWERCASE_LETTER = string.ascii_lowercase[0]
 
 
 class Coder(abc.ABC):
@@ -12,6 +14,11 @@ class Coder(abc.ABC):
     @abc.abstractmethod
     def get_symbol(self, symbol: str, position: int):
         pass
+
+    def get_start(self, symbol):
+        start = self.alphabet.find(FIRST_UPPERCASE_LETTER) if symbol.isupper() else \
+            self.alphabet.find(FIRST_LOWERCASE_LETTER)
+        return start
 
     def encode(self, message: str):
         encoded = [''] * len(message)
@@ -33,8 +40,7 @@ class CaesarEncode(Coder):
         self.key = int(key % (len(self.alphabet) // 2))
 
     def get_symbol(self, symbol: str, position: int):
-        start = self.alphabet.find(string.ascii_uppercase[0]) if symbol.isupper() else \
-            self.alphabet.find(string.ascii_lowercase[0])
+        start = self.get_start(symbol)
         new_symbol_code = start + (self.alphabet.find(symbol) - start + self.key) % (len(self.alphabet) // 2)
         new_symbol = self.alphabet[int(new_symbol_code)]
         return new_symbol
@@ -52,10 +58,9 @@ class VigenereEncode(Coder):
         super().__init__(key)
 
     def get_symbol(self, symbol: str, pos: int):
-        start = self.alphabet.find(string.ascii_uppercase[0]) if symbol.isupper() else \
-            self.alphabet.find(string.ascii_lowercase[0])
+        start = self.get_start(symbol)
         new_symbol_code = start + (self.alphabet.find(symbol) + self.alphabet.find(self.key[pos % len(self.key)])
-                                   - start - self.alphabet.find(string.ascii_lowercase[0])) % (len(self.alphabet) // 2)
+                                   - start - self.alphabet.find(FIRST_LOWERCASE_LETTER)) % (len(self.alphabet) // 2)
         new_symbol = self.alphabet[int(new_symbol_code)]
         return new_symbol
 
@@ -66,11 +71,10 @@ class VigenereDecode(Coder):
         super().__init__(key)
 
     def get_symbol(self, symbol: str, pos: int):
-        start = self.alphabet.find(string.ascii_uppercase[0]) if symbol.isupper() else \
-            self.alphabet.find(string.ascii_lowercase[0])
+        start = self.get_start(symbol)
         real_symbol_code = start + (self.alphabet.find(symbol) - start -
                                     self.alphabet.find(self.key[pos % len(self.key)]) +
-                                    self.alphabet.find(string.ascii_lowercase[0]) +
+                                    self.alphabet.find(FIRST_LOWERCASE_LETTER) +
                                     (len(self.alphabet) // 2)) % (len(self.alphabet) // 2)
         real_symbol = self.alphabet[int(real_symbol_code)]
         return real_symbol

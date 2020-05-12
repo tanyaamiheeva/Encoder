@@ -1,6 +1,5 @@
-from coder import CaesarEncode, CaesarDecode
+from coder import CaesarDecode
 from collections import defaultdict
-from copy import deepcopy
 import string
 import json
 
@@ -19,7 +18,7 @@ class ModelBuilder:
     def build_model(self, text: str):
         self.count_quantity(text)
         frequencies = {}
-        for symbol in self.quantities.keys():
+        for symbol in self.quantities:
             frequencies[symbol] = self.quantities[symbol] / self.letter_number
 
         return frequencies
@@ -36,23 +35,24 @@ class Hack:
         self.alphabet = string.ascii_letters
         self.degree = degree
 
-    def hacking(self, message: str):
-        results = [0 for i in range(len(self.alphabet))]
+    def count(self, new_model, shift):
+        result = 0
+        for symbol in string.ascii_lowercase:
+            code = (string.ascii_lowercase.find(symbol) + shift) % len(string.ascii_lowercase)
+            new_symbol = string.ascii_lowercase[code]
+            result += (self.model[symbol] - new_model[new_symbol]) ** self.degree
+        return result
+
+    def encode(self, message: str):
+        results = [0 for i in range(len(string.ascii_lowercase))]
         closest_result = 0
         new_model = ModelBuilder().build_model(message.lower())
-        for symbol in string.ascii_lowercase:
-            results[closest_result] += (self.model.get(symbol, 0) - new_model.get(symbol, 0)) ** self.degree
+        results[closest_result] = self.count(new_model, 0)
 
-        for i in range(0, len(self.alphabet) // 2):
-            for symbol in string.ascii_lowercase:
-                results[i] += (self.model.get(symbol, 0) - new_model.get(symbol, 0)) ** self.degree
+        for i in range(len(string.ascii_lowercase)):
+            results[i] = self.count(new_model, i)
             if results[i] < results[closest_result]:
                 closest_result = i
 
-            next_model = deepcopy(new_model)
-            for letter in range(len(string.ascii_lowercase)):
-                next_model[string.ascii_lowercase[letter]] = new_model[
-                    string.ascii_lowercase[(letter + 1) % len(string.ascii_lowercase)]]
-            new_model = next_model
         return CaesarDecode(closest_result).encode(message)
 
