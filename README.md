@@ -1,1 +1,1 @@
-# Encoder (Caesar & Vigenere cyphers)
+# Encoder (Caesar & Vigenere ciphers)
